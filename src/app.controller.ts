@@ -7,7 +7,7 @@ export class AppController {
   @GrpcMethod(SERVICES.USER_SERVICE, USER_METHODS.CHECK_HEALTH)
   checkHealth() {
     return {
-      message: 'User Service',
+      message: SERVICES.USER_SERVICE,
       status: true,
     };
   }
