@@ -10,24 +10,14 @@ export class UserService {
     @InjectModel(User)
     private userModel: typeof User,
   ) {}
-  async Signup(request: UserCreateDto) {
+  async registerUser(request: UserCreateDto) {
     try {
-      console.log('singup function', request);
+      console.log('registerUser function', request);
     } catch (err) {
       return {
         statusCode: 500,
         message: err.message,
         result: {},
-      };
-    }
-  }
-  async login(request: userLoginDto) {
-    try {
-      console.log('in login function', request);
-    } catch (err) {
-      return {
-        statusCode: 500,
-        message: err.message,
       };
     }
   }

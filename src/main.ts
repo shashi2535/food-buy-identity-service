@@ -4,7 +4,6 @@ import {
   MicroserviceOptions,
   Transport,
 } from '@nestjs/microservices';
-import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -14,10 +13,10 @@ async function bootstrap() {
       transport: Transport.GRPC,
       options: {
         host: 'localhost',
-        port: '50050',
+        port: '8000',
         package: 'user',
-        url: '0.0.0.0:50050',
-        protoPath: join(__dirname, '../src/proto/user.proto'),
+        url: '0.0.0.0:8000',
+        protoPath: 'proto/user.proto',
         loaders: {
           enums: String,
           objects: true,

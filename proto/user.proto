@@ -2,15 +2,25 @@ syntax = "proto3";
 
 package user;
 
-service IUserService {
-  rpc Signup (signupRequest) returns (signupResponse) {}
+service UserService {
+  rpc checkHealth (Empty) returns (Response) {};
+  rpc registerUser (RegisterUserReq) returns (RegisterUserRes) {};
 }
-message signupRequest {
+
+message Empty {}
+
+message Response {
+  string message = 1;
+  bool status = 2; 
+}
+
+message RegisterUserReq {
   string name = 1;
   string email =2;
   string password = 3;
 }
-message  data {
+
+message RegisterUserData {
   optional  string userUuid = 1;
   optional  string name = 2;
   optional  string email = 3;
@@ -18,8 +28,9 @@ message  data {
   optional  string  createdAt = 5;
   optional  string updatedAt =6;
 }
-message signupResponse{
+
+message RegisterUserRes{
   optional  int32 statusCode = 1;
   optional  string message = 2;
-optional  data result =3;
+  optional  RegisterUserData result =3;
 }

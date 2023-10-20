@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { config } from './constant';
+import { AppController } from './app.controller';
 @Module({
   imports: [
     SequelizeModule.forRoot({
@@ -17,7 +18,7 @@ import { config } from './constant';
     ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}
