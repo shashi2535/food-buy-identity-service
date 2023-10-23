@@ -10,6 +10,7 @@ export class UserController {
   constructor(private userService: UserService) {}
   @GrpcMethod(SERVICES.USER_SERVICE, USER_METHODS.REGISTER_USER)
   async registerUser(request: UserCreateDto): Promise<any> {
+    console.log('in register user service');
     return this.userService.registerUser(request);
   }
 }

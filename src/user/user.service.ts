@@ -13,6 +13,13 @@ export class UserService {
   async registerUser(request: UserCreateDto) {
     try {
       console.log('registerUser function', request);
+      // const userData = await this.userModel.create({});
+
+      return {
+        status: true,
+        message: 'message',
+        result: null,
+      };
     } catch (err) {
       return {
         statusCode: 500,

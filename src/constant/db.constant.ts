@@ -1,5 +1,8 @@
 import * as dotenv from 'dotenv';
-dotenv.config();
+const ENV = process.env.NODE_ENV;
+dotenv.config({
+  path: !ENV ? '.env.dev' : `.env.${ENV}`,
+});
 export const config = {
   password: process.env.MYSQL_ROOT_PASSWORD,
   database: process.env.MYSQL_DATABASE,

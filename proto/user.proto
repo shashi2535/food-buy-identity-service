@@ -30,7 +30,7 @@ message RegisterUserData {
 }
 
 message RegisterUserRes{
-  optional  int32 statusCode = 1;
+  optional  bool status = 1;
   optional  string message = 2;
   optional  RegisterUserData result =3;
 }

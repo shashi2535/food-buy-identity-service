@@ -4,8 +4,13 @@ import { UserModule } from './user/user.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { config } from './constant';
 import { AppController } from './app.controller';
+const ENV = process.env.NODE_ENV;
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: !ENV ? '.env.dev' : `.env.${ENV}`,
+      isGlobal: true,
+    }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
       host: config.host,
@@ -15,7 +20,6 @@ import { AppController } from './app.controller';
       database: config.database,
       models: [],
     }),
-    ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
   ],
   controllers: [AppController],
