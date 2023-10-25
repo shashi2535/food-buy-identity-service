@@ -4,7 +4,10 @@ package user;
 
 service UserService {
   rpc checkHealth (Empty) returns (Response) {};
-  rpc registerUser (RegisterUserReq) returns (RegisterUserRes) {};
+  rpc registerOwner (RegisterUserReq) returns (RegisterUserRes) {};
+  rpc verifyOtp (verifyOtpReq) returns (verifyOtpRes) {};
+  rpc resendOtp (resendOtpReq) returns (resendOtpRes) {};
+  rpc loginOwner(Empty) returns (Response){}
 }
 
 message Empty {}
@@ -13,23 +16,42 @@ message Response {
   string message = 1;
   bool status = 2; 
 }
-
+message verifyOtpReq{
+  optional string type=1;
+  optional string otp=2;
+}
 message RegisterUserReq {
   string name = 1;
   string email =2;
-  string password = 3;
+  string role=3;
 }
-
 message RegisterUserData {
-  optional  string userUuid = 1;
-  optional  string name = 2;
-  optional  string email = 3;
-  optional  string password =4;
-  optional  string  createdAt = 5;
-  optional  string updatedAt =6;
+  optional  string name = 1;
+  optional  string email = 2;
+  optional  string token =3;
+  optional  string  createdAt = 4;
+  optional  string updatedAt =5;
 }
 
 message RegisterUserRes{
+  optional  bool status = 1;
+  optional  string message = 2;
+  optional  RegisterUserData result =3;
+}
+message verifyOtpData{
+  optional  string token =3;
+}
+message verifyOtpRes{
+  optional  bool status = 1;
+  optional  string message = 2;
+  optional  verifyOtpData result =3;
+}
+message resendOtpReq{
+  optional string type=1;
+  optional string id=2;
+}
+
+message resendOtpRes{
   optional  bool status = 1;
   optional  string message = 2;
   optional  RegisterUserData result =3;

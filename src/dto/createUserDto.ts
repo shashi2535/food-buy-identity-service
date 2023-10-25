@@ -2,8 +2,7 @@ export class UserCreateDto {
   name: string;
 
   email: string;
-
-  password: string;
+  role: string;
 }
 
 export class userLoginDto {
