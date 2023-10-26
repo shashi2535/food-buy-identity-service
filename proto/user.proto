@@ -7,7 +7,7 @@ service UserService {
   rpc registerOwner (RegisterUserReq) returns (RegisterUserRes) {};
   rpc verifyOtp (verifyOtpReq) returns (verifyOtpRes) {};
   rpc resendOtp (resendOtpReq) returns (resendOtpRes) {};
-  rpc loginOwner(Empty) returns (Response){}
+  rpc loginOwner(loginRequest) returns (RegisterUserRes){}
 }
 
 message Empty {}
@@ -55,4 +55,10 @@ message resendOtpRes{
   optional  bool status = 1;
   optional  string message = 2;
   optional  RegisterUserData result =3;
+}
+
+
+message loginRequest{
+  optional string phone=1;
+  optional string email=2;
 }

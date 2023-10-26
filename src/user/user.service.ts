@@ -149,7 +149,41 @@ export class UserService {
   }
   async loginOwner(request: any) {
     try {
-      console.log('in login owner function', request);
+      if (request.email) {
+        const userData = await this.userModel.findOne({
+          where: { email: request.email },
+        });
+        if (!userData) {
+          return {
+            status: false,
+            message: 'User Not Exist',
+          };
+        }
+        if (userData) {
+          await this.userModel.update(
+            {
+              token: generateOtpOnEmail(6),
+              tokenExp: new Date(new Date().getTime() + 10 * 60 * 1000),
+            },
+            {
+              returning: true,
+              where: { email: request.email },
+            },
+          );
+          const updatedUserData = await this.userModel.findOne({
+            where: { email: request.email },
+          });
+          return {
+            status: true,
+            message: 'Ready To Login.',
+            result: {
+              email: updatedUserData.email,
+              token: updatedUserData.token,
+              name: updatedUserData.name,
+            },
+          };
+        }
+      }
       return {
         status: true,
         message: 'OK',
