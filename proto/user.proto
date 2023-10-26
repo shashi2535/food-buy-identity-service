@@ -17,7 +17,7 @@ message Response {
   bool status = 2; 
 }
 message verifyOtpReq{
-  optional string type=1;
+  optional string email=1;
   optional string otp=2;
 }
 message RegisterUserReq {
@@ -48,7 +48,7 @@ message verifyOtpRes{
 }
 message resendOtpReq{
   optional string type=1;
-  optional string id=2;
+  optional string email=2;
 }
 
 message resendOtpRes{

@@ -59,41 +59,41 @@ export class UserService {
   }
   async verifyOtp(request: any) {
     try {
-      const { type, otp } = request;
-      if (type == 'email') {
-        const userData = await this.userModel.findOne({
-          where: { token: otp },
-        });
-        if (!userData) {
-          return {
-            status: false,
-            message: 'Invalid Otp',
-          };
-        }
-        const otpExpirationTime = userData?.dataValues?.tokenExp?.getTime();
-        if ((otpExpirationTime as number) < new Date()?.getTime()) {
-          return {
-            status: true,
-            message: 'Otp Has Expired.',
-          };
-        } else {
-          const token = await this.jwtService.signAsync({
-            email: userData.email,
-            id: userData.id,
-          });
-          return {
-            status: true,
-            message: 'Otp Verified Successfully.',
-            result: {
-              token: token,
-            },
-          };
-        }
+      const { email, otp } = request;
+      const userData = await this.userModel.findOne({
+        where: { email },
+      });
+      if (!userData) {
+        return {
+          status: false,
+          message: 'Invalid User',
+        };
       }
-      return {
-        status: true,
-        message: 'ok',
-      };
+      if (userData.token !== String(otp)) {
+        return {
+          status: false,
+          message: 'Invalid Otp',
+        };
+      }
+      const otpExpirationTime = userData?.dataValues?.tokenExp?.getTime();
+      if ((otpExpirationTime as number) < new Date()?.getTime()) {
+        return {
+          status: true,
+          message: 'Otp Has Expired.',
+        };
+      } else {
+        const token = await this.jwtService.signAsync({
+          email: userData.email,
+          id: userData.id,
+        });
+        return {
+          status: true,
+          message: 'Otp Verified Successfully.',
+          result: {
+            token: token,
+          },
+        };
+      }
     } catch (err) {
       console.log('err', err);
       return {
@@ -105,9 +105,8 @@ export class UserService {
   }
   async resendOtp(request: any) {
     try {
-      const { id, type } = request;
-      const userData = await this.userModel.findOne({ where: { id } });
-      console.log(userData);
+      const { email, type } = request;
+      const userData = await this.userModel.findOne({ where: { email } });
       if (!userData) {
         return {
           status: false,
@@ -123,10 +122,12 @@ export class UserService {
           },
           {
             returning: true,
-            where: { id },
+            where: { email },
           },
         );
-        const updatedUserData = await this.userModel.findOne({ where: { id } });
+        const updatedUserData = await this.userModel.findOne({
+          where: { email },
+        });
         return {
           status: true,
           message: 'Otp Send On Email Successfully.',
