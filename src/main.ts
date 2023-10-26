@@ -12,10 +12,10 @@ async function bootstrap() {
     {
       transport: Transport.GRPC,
       options: {
-        host: 'food-buy-identity-service-production.up.railway.app',
+        host: 'localhost',
         port: '8000',
         package: 'user',
-        url: 'food-buy-identity-service-production.up.railway.app:8000',
+        url: '0.0.0.0:8000',
         protoPath: 'proto/user.proto',
         loaders: {
           enums: String,
