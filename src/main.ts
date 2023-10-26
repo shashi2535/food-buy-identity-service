@@ -29,3 +29,4 @@ async function bootstrap() {
   app.listen();
 }
 bootstrap();
+console.log('process env>>>>', process.env);
