@@ -328,7 +328,7 @@ export class UserService {
         console.log('phone', request);
         console.log('ISOTP', process.env.ISOTP);
         const otp = `${
-          process.env.ISOTP === 'true' ? `${generateOtpForPhone()}` : '12345'
+          process.env.ISOTP === 'true' ? `${generateOtpForPhone()}` : '123456'
         } `;
         const userData = await this.userModel.findOne({
           where: { phone: request.phone },
