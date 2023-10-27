@@ -29,6 +29,8 @@ export class User extends Model<User> {
   tokenExp: Date;
   @Column({ defaultValue: false })
   isVerified: boolean;
+  @Column({ defaultValue: false })
+  isPhoneExist: boolean;
   @Column({ defaultValue: true })
   isActive: boolean;
   @Column({ type: DataType.DATE })

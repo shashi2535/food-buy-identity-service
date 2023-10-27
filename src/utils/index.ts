@@ -7,3 +7,7 @@ export const generateOtpOnEmail = (digit: number) => {
   }
   return res;
 };
+
+export const generateOtpForPhone = () => {
+  return Math.floor(Math.random() * 1000000 + 1);
+};

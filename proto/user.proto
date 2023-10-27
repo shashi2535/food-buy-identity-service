@@ -6,7 +6,7 @@ service UserService {
   rpc checkHealth (Empty) returns (Response) {};
   rpc registerOwner (RegisterUserReq) returns (RegisterUserRes) {};
   rpc verifyOtp (verifyOtpReq) returns (verifyOtpRes) {};
-  rpc resendOtp (resendOtpReq) returns (resendOtpRes) {};
+  rpc resendOtp (resendOtpReq) returns (RegisterUserRes) {};
   rpc loginOwner(loginRequest) returns (RegisterUserRes){}
 }
 
@@ -19,18 +19,25 @@ message Response {
 message verifyOtpReq{
   optional string email=1;
   optional string otp=2;
+  optional string phone=3;
 }
 message RegisterUserReq {
   string name = 1;
   string email =2;
   string role=3;
+  int32 id=4;
 }
 message RegisterUserData {
-  optional  string name = 1;
-  optional  string email = 2;
-  optional  string token =3;
-  optional  string  createdAt = 4;
-  optional  string updatedAt =5;
+  optional  int32 id = 1;
+  optional  string name = 2;
+  optional  string email = 3;
+  optional  string token =4;
+  optional  string otp =5;
+  optional bool isEmailLogin=6;
+  optional bool isPhoneLogin=7;
+  optional string phone=8;
+  optional  string  createdAt = 9;
+  optional  string updatedAt =10;
 }
 
 message RegisterUserRes{
@@ -39,7 +46,8 @@ message RegisterUserRes{
   optional  RegisterUserData result =3;
 }
 message verifyOtpData{
-  optional  string token =3;
+  optional  string token =1;
+  optional  string id =2;
 }
 message verifyOtpRes{
   optional  bool status = 1;
@@ -47,18 +55,12 @@ message verifyOtpRes{
   optional  verifyOtpData result =3;
 }
 message resendOtpReq{
-  optional string type=1;
+  optional string phone=1;
   optional string email=2;
 }
-
-message resendOtpRes{
-  optional  bool status = 1;
-  optional  string message = 2;
-  optional  RegisterUserData result =3;
-}
-
 
 message loginRequest{
   optional string phone=1;
   optional string email=2;
+  optional string role=3;
 }
