@@ -8,4 +8,5 @@ export enum USER_METHODS {
   VERIFY_OTP = 'verifyOtp',
   RESEND_OTP = 'resendOtp',
   LOGIN_OWNER = 'loginOwner',
+  VERIFY_TOKEN = 'verifyToken',
 }

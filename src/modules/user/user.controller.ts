@@ -1,4 +1,4 @@
-import { USER_METHODS } from './../interface/grpc.service.interface';
+import { USER_METHODS } from '../../interface/grpc.service.interface';
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { UserCreateDto } from 'src/dto/createUserDto';
@@ -23,5 +23,15 @@ export class UserController {
   @GrpcMethod(SERVICES.USER_SERVICE, USER_METHODS.LOGIN_OWNER)
   async loginOwner(request: any): Promise<any> {
     return this.userService.loginOwner(request);
+  }
+
+  /**
+   * @description Function to validate token
+   * @param request
+   * @returns
+   */
+  @GrpcMethod(SERVICES.USER_SERVICE, USER_METHODS.VERIFY_TOKEN)
+  async verifyToken(request: { token: string }): Promise<any> {
+    return this.userService.verifyToken(request);
   }
 }

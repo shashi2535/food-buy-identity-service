@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './user/user.module';
+import { UserModule } from './modules/user/user.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { config } from './constant';
 import { AppController } from './app.controller';
-import { Role, User, User_Role } from './model';
+import { Role, User, UserRoles } from './model';
 const ENV = process.env.NODE_ENV;
 @Module({
   imports: [
@@ -19,9 +19,10 @@ const ENV = process.env.NODE_ENV;
       username: config.userName,
       password: config.password,
       database: config.database,
-      models: [User, Role, User_Role],
+      models: [User, Role, UserRoles],
       logging: false,
       timezone: '+00:00',
+      autoLoadModels: true,
     }),
     UserModule,
   ],

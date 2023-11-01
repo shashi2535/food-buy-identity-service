@@ -1,4 +1,5 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import { Column, DataType, Model, Table, HasMany } from 'sequelize-typescript';
+import { UserRoles } from './user_role.entity';
 
 @Table({
   tableName: 'users',
@@ -11,30 +12,45 @@ export class User extends Model<User> {
     autoIncrement: true,
   })
   id: number;
+
   @Column({
     unique: true,
   })
   email: string;
+
   @Column
   name: string;
+
   @Column
   phone: string;
+
   @Column
   otp: string;
+
   @Column
   token: string;
+
   @Column({ type: DataType.DATE })
   otpExpire: Date;
+
   @Column({ type: DataType.DATE })
   tokenExp: Date;
+
   @Column({ defaultValue: false })
   isVerified: boolean;
+
   @Column({ defaultValue: false })
   isPhoneExist: boolean;
+
   @Column({ defaultValue: true })
   isActive: boolean;
+
   @Column({ type: DataType.DATE })
   createdAt: Date;
+
   @Column({ type: DataType.DATE })
   updatedAt: Date;
+
+  @HasMany(() => UserRoles)
+  userRoles: UserRoles[];
 }

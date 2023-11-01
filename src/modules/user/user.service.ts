@@ -1,16 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { UserCreateDto } from 'src/dto';
-import { Role, User, User_Role } from 'src/model';
-import { generateOtpForPhone, generateOtpOnEmail } from 'src/utils';
+import { Role, User, UserRoles } from 'src/model';
+import {
+  generateOtpForPhone,
+  generateOtpOnEmail,
+  setInitialResponse,
+  setSuccessResponse,
+} from 'src/utils';
 import { JwtService } from '@nestjs/jwt';
 import { HttpMessage } from 'src/constant';
+import { Sequelize } from 'sequelize';
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User) private userModel: typeof User,
     @InjectModel(Role) private roleModel: typeof Role,
-    @InjectModel(User_Role) private user_roleModel: typeof User_Role,
+    @InjectModel(UserRoles) private userRoleModel: typeof UserRoles,
     private jwtService: JwtService,
   ) {}
   async registerOwner(request: UserCreateDto) {
@@ -18,12 +24,12 @@ export class UserService {
       const { email, name, role } = request;
       const roleData = await this.roleModel.findOne({ where: { name: role } });
       const userData = await this.userModel.findOne({
-        where: { email: request.email },
+        where: { email: request?.email },
       });
       if (userData) {
         return {
           status: false,
-          message: HttpMessage.USER_ALREADYEXIST,
+          message: HttpMessage.USER_ALREADY_EXIST,
         };
       }
       if (request.id) {
@@ -65,30 +71,29 @@ export class UserService {
             },
           };
         }
-      } else {
-        if (!userData) {
-          const userCreateData = await this.userModel.create({
-            name,
-            email,
-            isActive: true,
-            token: generateOtpOnEmail(6),
-            tokenExp: new Date(new Date().getTime() + 10 * 60 * 1000),
-          });
-          await this.user_roleModel.create({
-            user_id: userCreateData.id,
-            role_id: roleData.id,
-          });
-          return {
-            status: true,
-            message: 'user registered successfully',
-            result: {
-              isEmailLogin: true,
-              email: userCreateData.email,
-              token: userCreateData.token,
-              name: userCreateData.name,
-            },
-          };
-        }
+      }
+      if (!userData) {
+        const userCreateData = await this.userModel.create({
+          name,
+          email,
+          isActive: true,
+          token: generateOtpOnEmail(6),
+          tokenExp: new Date(new Date().getTime() + 10 * 60 * 1000),
+        });
+        await this.userRoleModel.create({
+          userId: userCreateData.id,
+          roleId: roleData.id,
+        });
+        return {
+          status: true,
+          message: 'user registered successfully',
+          result: {
+            isEmailLogin: true,
+            email: userCreateData.email,
+            token: userCreateData.token,
+            name: userCreateData.name,
+          },
+        };
       }
     } catch (err) {
       console.log('err', err);
@@ -103,9 +108,14 @@ export class UserService {
     try {
       const { email, otp } = request;
       if (request.email) {
-        const userData = await this.userModel.findOne({
+        const userData: any = await this.userModel.findOne({
           where: { email },
+          raw: true,
         });
+        console.log(
+          '🚀 ~ file: user.service.ts:110 ~ UserService ~ verifyOtp ~ userData:',
+          userData,
+        );
         if (!userData) {
           return {
             status: false,
@@ -118,7 +128,7 @@ export class UserService {
             message: 'Invalid Otp',
           };
         }
-        const otpExpirationTime = userData?.dataValues?.tokenExp?.getTime();
+        const otpExpirationTime = userData?.tokenExp?.getTime();
         if (Number(otpExpirationTime) < new Date()?.getTime()) {
           return {
             status: true,
@@ -139,6 +149,7 @@ export class UserService {
       } else {
         const userData = await this.userModel.findOne({
           where: { phone: request.phone },
+          raw: true,
         });
         if (!userData) {
           return {
@@ -152,7 +163,7 @@ export class UserService {
             message: 'Invalid Otp',
           };
         }
-        const otpExpirationTime = userData?.dataValues?.otpExpire?.getTime();
+        const otpExpirationTime = userData?.otpExpire?.getTime();
         if ((otpExpirationTime as number) < new Date()?.getTime()) {
           return {
             status: true,
@@ -190,10 +201,11 @@ export class UserService {
   }
   async resendOtp(request: any) {
     try {
+      console.log('request', request);
       if (request.email) {
-        console.log('reqmst', request);
         const userData = await this.userModel.findOne({
           where: { email: request.email },
+          raw: true,
         });
         if (!userData) {
           return {
@@ -342,9 +354,9 @@ export class UserService {
             otp: otp,
             otpExpire: new Date(new Date().getTime() + 10 * 60 * 1000),
           });
-          await this.user_roleModel.create({
-            user_id: userCreateData.id,
-            role_id: roleData.id,
+          await this.userRoleModel.create({
+            userId: userCreateData.id,
+            roleId: roleData.id,
           });
           const response =
             process.env.ISOTP === 'false'
@@ -407,5 +419,46 @@ export class UserService {
         result: null,
       };
     }
+  }
+
+  async verifyToken({ token }: { token: string }) {
+    let response = setInitialResponse();
+    try {
+      const { id } = await this.jwtService.verify(token);
+      const userDetails = await this.userModel.findOne({
+        where: { id },
+        attributes: [
+          'email',
+          'id',
+          'name',
+          'phone',
+          'isVerified',
+          [Sequelize.col('userRoles.id'), 'roleId'],
+          [Sequelize.col('userRoles.role.name'), 'role'],
+        ],
+        include: [
+          {
+            model: this.userRoleModel,
+            attributes: [],
+            include: [
+              {
+                model: this.roleModel,
+                attributes: [],
+              },
+            ],
+          },
+        ],
+        raw: true,
+        nest: true,
+      });
+      if (!userDetails) {
+        throw new Error('UnAuthorized');
+      }
+      response = setSuccessResponse(userDetails);
+    } catch (err) {
+      console.log('err', err?.message);
+      response.message = err?.message;
+    }
+    return response;
   }
 }
