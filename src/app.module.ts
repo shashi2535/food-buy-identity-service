@@ -9,7 +9,7 @@ const ENV = process.env.NODE_ENV;
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: !ENV ? '.env.dev' : `.env.${ENV}`,
+      envFilePath: !ENV ? '.env.development' : `.env.${ENV}`,
       isGlobal: true,
     }),
     SequelizeModule.forRoot({
